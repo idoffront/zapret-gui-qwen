@@ -15,7 +15,7 @@ import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 
-from gi.repository import Gtk, Adw, Gio, GLib, GObject
+from gi.repository import Gtk, Adw, Gio, GLib, GObject, Gdk
 
 from zapret_backend import (
     CommandExecutor, 

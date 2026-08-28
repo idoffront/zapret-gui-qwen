@@ -1,48 +1,60 @@
 {
-    "description": "Конфигурация команд для zapret-gui",
+    "description": "Конфигурация команд для zapret-gui (Snowy-Fluffy zapret-installer)",
     "version": "1.0",
+    "note": "Для zapret-installer от Snowy-Fluffy используются ТОЛЬКО systemctl команды. Прямые команды zapret (status, start, stop) не существуют.",
     "zapret_binary": "/usr/bin/zapret",
     "commands": {
         "status": {
-            "args": ["status"],
-            "description": "Проверка текущего статуса zapret",
-            "parse_status": {
-                "active_patterns": ["active", "enabled", "running", "включено", "активно"],
-                "inactive_patterns": ["inactive", "disabled", "stopped", "выключено", "остановлено"],
-                "case_sensitive": false
-            }
+            "args": [],
+            "description": "Проверка статуса через systemctl is-active zapret.service",
+            "use_systemctl_only": true
         },
         "start": {
-            "args": ["start"],
-            "description": "Включение zapret"
+            "args": [],
+            "description": "Запуск через systemctl start zapret.service",
+            "use_systemctl_only": true
         },
         "stop": {
-            "args": ["stop"],
-            "description": "Выключение zapret"
+            "args": [],
+            "description": "Остановка через systemctl stop zapret.service",
+            "use_systemctl_only": true
         },
         "restart": {
-            "args": ["restart"],
-            "description": "Перезапуск zapret"
+            "args": [],
+            "description": "Перезапуск через systemctl restart zapret.service",
+            "use_systemctl_only": true
         },
         "enable": {
-            "args": ["enable"],
-            "description": "Включение автозапуска"
+            "args": [],
+            "description": "Включение автозапуска через systemctl enable zapret.service",
+            "use_systemctl_only": true
         },
         "disable": {
-            "args": ["disable"],
-            "description": "Отключение автозапуска"
+            "args": [],
+            "description": "Отключение автозапуска через systemctl disable zapret.service",
+            "use_systemctl_only": true
+        },
+        "enable_autostart": {
+            "args": [],
+            "description": "Включение автозапуска с запуском через systemctl enable --now zapret.service",
+            "use_systemctl_only": true
+        },
+        "disable_autostart": {
+            "args": [],
+            "description": "Отключение автозапуска с остановкой через systemctl disable --now zapret.service",
+            "use_systemctl_only": true
         },
         "install": {
             "args": ["install"],
-            "description": "Установка zapret"
+            "description": "Установка компонентов zapret-installer"
         },
         "uninstall": {
             "args": ["uninstall"],
-            "description": "Удаление zapret"
+            "description": "Удаление компонентов zapret-installer"
         },
         "update": {
             "args": ["update"],
-            "description": "Обновление zapret"
+            "description": "Обновление компонентов zapret-installer"
         }
     },
     "systemd_service": {

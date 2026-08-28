@@ -17,9 +17,10 @@ zapret-installer в Fedora. Позволяет включать/выключат
 логи, настраивать параметры через удобный интерфейс в стиле GNOME.
 
 # Зависимости во время сборки (для noarch пакета не нужны, но оставим для полноты)
-%if 0%{?fedora} >= 44
-BuildRequires:  rpm-build
-%endif
+BuildRequires:  rpm-build >= 4.18
+BuildRequires:  python3 >= 3.12
+BuildRequires:  desktop-file-utils
+BuildRequires:  libxml2
 
 # Runtime зависимости
 Requires:       python3 >= 3.12
@@ -30,11 +31,9 @@ Requires:       polkit >= 124
 Requires:       pkexec
 Requires:       systemd
 Requires:       jq
-
-# Для обновления кэша иконок и desktop базы
-Requires(post): gtk4-tools
+Requires(post): gtk-update-icon-cache
 Requires(post): desktop-file-utils
-Requires(postun): gtk4-tools
+Requires(postun): gtk-update-icon-cache
 Requires(postun): desktop-file-utils
 
 # Исходники
@@ -97,7 +96,7 @@ python3 -m py_compile main.py zapret_backend.py
 python3 -c "import json; json.load(open('zapret_commands.json'))"
 
 # Проверка XML (PolicyKit)
-xmllint --noout %{app_id}.policy 2>/dev/null || true
+python3 -c "import xml.etree.ElementTree as ET; ET.parse('%{app_id}.policy')"
 
 # Проверка desktop файла
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{app_id}.desktop || true
@@ -107,7 +106,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{app_id}.desktop || 
 gtk-update-icon-cache -q %{_datadir}/icons/hicolor &>/dev/null || :
 
 # Обновление базы desktop файлов
-update-desktop-database &>/dev/null || :
+update-desktop-database %{_datadir}/applications &>/dev/null || :
 
 # Перезагрузка polkit
 systemctl reload polkit.service &>/dev/null || :
@@ -117,7 +116,7 @@ systemctl reload polkit.service &>/dev/null || :
 gtk-update-icon-cache -q %{_datadir}/icons/hicolor &>/dev/null || :
 
 # Обновление базы desktop файлов при удалении
-update-desktop-database &>/dev/null || :
+update-desktop-database %{_datadir}/applications &>/dev/null || :
 
 # Перезагрузка polkit при удалении
 systemctl reload polkit.service &>/dev/null || :
@@ -138,6 +137,7 @@ fi
 %{_datadir}/zapret-gui/zapret_commands.json
 
 # Конфигурация (помечена как config, не удаляется при обновлении)
+%dir /etc/zapret-gui
 %config(noreplace) /etc/zapret-gui/config.json
 
 # Иконка
@@ -154,7 +154,7 @@ fi
 %{_bindir}/zapret-manager
 
 %doc README.md
-%license LICENSE 2>/dev/null || :
+%license LICENSE
 
 %changelog
 * Mon Jan 01 2025 Zapret Manager Team <zapret-gui@example.com> - 1.0.0-1
