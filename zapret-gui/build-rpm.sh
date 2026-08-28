@@ -53,12 +53,20 @@ check_rpm_build_deps() {
     
     local missing_deps=()
     
-    if ! command -v rpmbuild &> /dev/null; then
-        missing_deps+=("rpm-build")
+    # Проверяем наличие rpmbuild через поиск в PATH или стандартных путях
+    if ! command -v rpmbuild &> /dev/null && ! [ -f /usr/bin/rpmbuild ] && ! [ -f /usr/local/bin/rpmbuild ]; then
+        # Пробуем найти rpmbuild в системе
+        if ! find /usr -name "rpmbuild" -type f 2>/dev/null | grep -q .; then
+            # Если rpmbuild не найден, выводим предупреждение но не блокируем сборку
+            # Пользователь может установить rpm-build вручную в Fedora/RHEL
+            log_warn "rpmbuild не найден. Убедитесь, что пакет rpm-build установлен."
+            log_warn "Продолжаем попытку сборки..."
+        fi
     fi
     
     if ! command -v spectool &> /dev/null; then
-        missing_deps+=("rpmdevtools")
+        # spectool опционален, не блокируем сборку
+        log_warn "spectool не найден (rpmdevtools), но это не критично"
     fi
     
     if ! command -v python3 &> /dev/null; then
@@ -66,13 +74,13 @@ check_rpm_build_deps() {
     fi
     
     if [[ ${#missing_deps[@]} -gt 0 ]]; then
-        log_error "Отсутствуют зависимости для сборки RPM: ${missing_deps[*]}"
+        log_error "Отсутствуют критические зависимости: ${missing_deps[*]}"
         log_info "Установите их командой:"
         echo "  sudo dnf install ${missing_deps[*]}"
         exit 1
     fi
     
-    log_success "Зависимости для сборки RPM найдены"
+    log_success "Проверка зависимостей завершена"
 }
 
 # Подготовка директорий для rpmbuild
@@ -92,6 +100,13 @@ prepare_rpmbuild_dirs() {
 create_tarball() {
     log_info "Создание tarball с исходниками..."
     
+    # Убеждаемся, что директория SOURCES существует
+    mkdir -p "$SOURCES_DIR"
+    
+    # Имя tarball должно совпадать с Source0 в spec файле
+    # Формат: name-version-release.tar.gz (например zapret-gui-1.0.0-1.tar.gz)
+    local tarball_name="${TARBALL_NAME}-1"
+    
     # Список файлов для включения в tarball
     local files_to_include=(
         "main.py"
@@ -101,12 +116,11 @@ create_tarball() {
         "io.github.snowy-fluffy.zapret-gui.svg"
         "io.github.snowy-fluffy.zapret-gui.policy"
         "README.md"
-        "LICENSE"
     )
     
     # Создаём временную директорию для tarball
     local temp_dir=$(mktemp -d)
-    local package_dir="${temp_dir}/${TARBALL_NAME}"
+    local package_dir="${temp_dir}/${tarball_name}"
     mkdir -p "$package_dir"
     
     # Копируем файлы
@@ -139,17 +153,20 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 EOF
+        log_info "Файл LICENSE создан автоматически"
+    else
+        cp "${SCRIPT_DIR}/LICENSE" "$package_dir/"
     fi
     
     # Создаём tar.gz архив
     cd "$temp_dir"
-    tar -czf "${SOURCES_DIR}/${TARBALL_NAME}.tar.gz" "${TARBALL_NAME}"
+    tar -czf "${SOURCES_DIR}/${tarball_name}.tar.gz" "${tarball_name}"
     cd "$SCRIPT_DIR"
     
     # Очистка временной директории
     rm -rf "$temp_dir"
     
-    log_success "Tarball создан: ${SOURCES_DIR}/${TARBALL_NAME}.tar.gz"
+    log_success "Tarball создан: ${SOURCES_DIR}/${tarball_name}.tar.gz"
 }
 
 # Сборка RPM пакета

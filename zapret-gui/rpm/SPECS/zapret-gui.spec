@@ -36,8 +36,9 @@ Requires(post): desktop-file-utils
 Requires(postun): gtk-update-icon-cache
 Requires(postun): desktop-file-utils
 
-# Исходники
-Source0:        %{name}-%{version}.tar.gz
+# Исходники - имя файла должно совпадать с Name-Version-Release.tar.gz
+# Release содержит %{?dist}, поэтому используем явное имя
+Source0:        %{name}-%{version}-1.tar.gz
 
 # Пути установки
 %global _bindir /usr/bin
