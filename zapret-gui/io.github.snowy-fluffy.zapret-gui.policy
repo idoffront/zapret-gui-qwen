@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <policy id="io.github.snowy-fluffy.zapret-gui.admin">
+    <description>Управление zapret через GUI</description>
+    <message>Требуется аутентификация для управления zapret</message>
+    <message xml:lang="ru">Требуется аутентификация для управления zapret</message>
+    <icon_name>network-wired-symbolic</icon_name>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/zapret</annotate>
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+  </policy>
+  
+  <action id="io.github.snowy-fluffy.zapret-gui.start">
+    <description>Запустить zapret</description>
+    <message>Требуется аутентификация для запуска zapret</message>
+    <message xml:lang="ru">Требуется аутентификация для запуска zapret</message>
+    <icon_name>media-playback-start-symbolic</icon_name>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/systemctl</annotate>
+    <annotate key="org.freedesktop.policykit.exec.arg1">start</annotate>
+    <annotate key="org.freedesktop.policykit.exec.arg2">zapret.service</annotate>
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+  </action>
+  
+  <action id="io.github.snowy-fluffy.zapret-gui.stop">
+    <description>Остановить zapret</description>
+    <message>Требуется аутентификация для остановки zapret</message>
+    <message xml:lang="ru">Требуется аутентификация для остановки zapret</message>
+    <icon_name>media-playback-stop-symbolic</icon_name>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/systemctl</annotate>
+    <annotate key="org.freedesktop.policykit.exec.arg1">stop</annotate>
+    <annotate key="org.freedesktop.policykit.exec.arg2">zapret.service</annotate>
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+  </action>
+  
+  <action id="io.github.snowy-fluffy.zapret-gui.restart">
+    <description>Перезапустить zapret</description>
+    <message>Требуется аутентификация для перезапуска zapret</message>
+    <message xml:lang="ru">Требуется аутентификация для перезапуска zapret</message>
+    <icon_name>view-refresh-symbolic</icon_name>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/systemctl</annotate>
+    <annotate key="org.freedesktop.policykit.exec.arg1">restart</annotate>
+    <annotate key="org.freedesktop.policykit.exec.arg2">zapret.service</annotate>
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+  </action>
+  
+  <action id="io.github.snowy-fluffy.zapret-gui.enable">
+    <description>Включить автозапуск zapret</description>
+    <message>Требуется аутентификация для включения автозапуска zapret</message>
+    <message xml:lang="ru">Требуется аутентификация для включения автозапуска zapret</message>
+    <icon_name>system-run-symbolic</icon_name>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/systemctl</annotate>
+    <annotate key="org.freedesktop.policykit.exec.arg1">enable</annotate>
+    <annotate key="org.freedesktop.policykit.exec.arg2">zapret.service</annotate>
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+  </action>
+  
+  <action id="io.github.snowy-fluffy.zapret-gui.disable">
+    <description>Отключить автозапуск zapret</description>
+    <message>Требуется аутентификация для отключения автозапуска zapret</message>
+    <message xml:lang="ru">Требуется аутентификация для отключения автозапуска zapret</message>
+    <icon_name>process-stop-symbolic</icon_name>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/systemctl</annotate>
+    <annotate key="org.freedesktop.policykit.exec.arg1">disable</annotate>
+    <annotate key="org.freedesktop.policykit.exec.arg2">zapret.service</annotate>
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+  </action>
+  
+  <action id="io.github.snowy-fluffy.zapret-gui.install">
+    <description>Установить zapret</description>
+    <message>Требуется аутентификация для установки zapret</message>
+    <message xml:lang="ru">Требуется аутентификация для установки zapret</message>
+    <icon_name>list-add-symbolic</icon_name>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/zapret</annotate>
+    <annotate key="org.freedesktop.policykit.exec.arg1">install</annotate>
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+  </action>
+  
+  <action id="io.github.snowy-fluffy.zapret-gui.uninstall">
+    <description>Удалить zapret</description>
+    <message>Требуется аутентификация для удаления zapret</message>
+    <message xml:lang="ru">Требуется аутентификация для удаления zapret</message>
+    <icon_name>list-remove-symbolic</icon_name>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/zapret</annotate>
+    <annotate key="org.freedesktop.policykit.exec.arg1">uninstall</annotate>
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+  </action>
+  
+  <action id="io.github.snowy-fluffy.zapret-gui.update">
+    <description>Обновить zapret</description>
+    <message>Требуется аутентификация для обновления zapret</message>
+    <message xml:lang="ru">Требуется аутентификация для обновления zapret</message>
+    <icon_name>view-refresh-symbolic</icon_name>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/zapret</annotate>
+    <annotate key="org.freedesktop.policykit.exec.arg1">update</annotate>
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+  </action>
+</node>

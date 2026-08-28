@@ -1,0 +1,54 @@
+{
+    "description": "Конфигурация команд для zapret-gui",
+    "version": "1.0",
+    "zapret_binary": "/usr/bin/zapret",
+    "commands": {
+        "status": {
+            "args": ["status"],
+            "description": "Проверка текущего статуса zapret",
+            "parse_status": {
+                "active_patterns": ["active", "enabled", "running", "включено", "активно"],
+                "inactive_patterns": ["inactive", "disabled", "stopped", "выключено", "остановлено"],
+                "case_sensitive": false
+            }
+        },
+        "start": {
+            "args": ["start"],
+            "description": "Включение zapret"
+        },
+        "stop": {
+            "args": ["stop"],
+            "description": "Выключение zapret"
+        },
+        "restart": {
+            "args": ["restart"],
+            "description": "Перезапуск zapret"
+        },
+        "enable": {
+            "args": ["enable"],
+            "description": "Включение автозапуска"
+        },
+        "disable": {
+            "args": ["disable"],
+            "description": "Отключение автозапуска"
+        },
+        "install": {
+            "args": ["install"],
+            "description": "Установка zapret"
+        },
+        "uninstall": {
+            "args": ["uninstall"],
+            "description": "Удаление zapret"
+        },
+        "update": {
+            "args": ["update"],
+            "description": "Обновление zapret"
+        }
+    },
+    "systemd_service": {
+        "name": "zapret.service",
+        "use_systemctl": true
+    },
+    "timeout_seconds": 30,
+    "require_privileges": true
+}
