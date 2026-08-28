@@ -1,0 +1,14 @@
+[Desktop Entry]
+Name=Zapret Manager
+Name[ru]=Менеджер Zapret
+Comment=GUI для управления zapret-installer
+Comment[ru]=Графический интерфейс для управления zapret-installer от Snowy-Fluffy
+Exec=/usr/bin/zapret-gui
+Icon=io.github.snowy-fluffy.zapret-gui
+Terminal=false
+Type=Application
+Categories=System;Settings;Utility;Network;
+Keywords=zapret;network;firewall;proxy;
+Keywords[ru]=запрет;сеть;брандмауэр;прокси;
+StartupNotify=true
+X-GNOME-UsesNotifications=true
