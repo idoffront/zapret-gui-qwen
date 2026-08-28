@@ -101,8 +101,7 @@ create_tarball() {
         "io.github.snowy-fluffy.zapret-gui.svg"
         "io.github.snowy-fluffy.zapret-gui.policy"
         "README.md"
-        "install.sh"
-        "zapret-gui.sh"
+        "LICENSE"
     )
     
     # Создаём временную директорию для tarball
@@ -140,8 +139,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 EOF
-    else
-        cp "${SCRIPT_DIR}/LICENSE" "$package_dir/"
     fi
     
     # Создаём tar.gz архив

@@ -195,18 +195,20 @@ ls -la /usr/share/polkit-1/actions/io.github.snowy-fluffy.zapret-gui.policy
 
 ## Команды zapret
 
-По умолчанию используются следующие команды:
+По умолчанию используются следующие команды через systemctl:
 
-| Действие | Команда |
-|----------|---------|
-| Старт | `pkexec /usr/bin/zapret start` |
-| Стоп | `pkexec /usr/bin/zapret stop` |
-| Перезапуск | `pkexec /usr/bin/zapret restart` |
-| Статус | `/usr/bin/zapret status` |
-| Вкл. автозапуск | `pkexec systemctl enable zapret` |
-| Выкл. автозапуск | `pkexec systemctl disable zapret` |
+| Действие | Systemctl команда |
+|----------|-------------------|
+| Старт | `pkexec systemctl start zapret.service` |
+| Стоп | `pkexec systemctl stop zapret.service` |
+| Перезапуск | `pkexec systemctl restart zapret.service` |
+| Статус | `systemctl is-active zapret.service` |
+| Вкл. автозапуск | `pkexec systemctl enable --now zapret.service` |
+| Выкл. автозапуск | `pkexec systemctl disable --now zapret.service` |
 
-Если команды отличаются в вашей версии zapret, отредактируйте `/etc/zapret-gui/config.json`.
+**Важно:** Для zapret-installer от Snowy-Fluffy прямые команды `zapret status`, `zapret start`, `zapret stop` **не существуют**. Все операции выполняются исключительно через systemd (systemctl).
+
+Если в вашей версии zapret-installer используются другие имена сервисов, отредактируйте `/etc/zapret-gui/config.json` и измените параметр `service_name`.
 
 ## Лицензия
 

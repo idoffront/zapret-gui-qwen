@@ -56,13 +56,19 @@ class CommandExecutor:
     
     def _build_systemctl_command(self, action: str) -> List[str]:
         """Построение systemctl команды"""
+        # Маппинг действий GUI на systemctl команды
+        # Для zapret-installer от Snowy-Fluffy используются только systemctl команды
+        # Прямые команды zapret (status, start, stop) не существуют
         systemctl_map = {
             "start": ["start", self.service_name],
             "stop": ["stop", self.service_name],
             "restart": ["restart", self.service_name],
+            "enable_autostart": ["enable", "--now", self.service_name],
+            "disable_autostart": ["disable", "--now", self.service_name],
             "enable": ["enable", self.service_name],
             "disable": ["disable", self.service_name],
-            "status": ["status", self.service_name],
+            "status": ["is-active", self.service_name],
+            "show_status": ["status", self.service_name],
         }
         return ["systemctl"] + systemctl_map.get(action, [action, self.service_name])
     
@@ -74,14 +80,15 @@ class CommandExecutor:
             Tuple[success: bool, stdout: str, stderr: str]
         """
         try:
-            # Пробуем сначала через systemctl если настроено
-            if self.use_systemctl and action in ["start", "stop", "restart", "enable", "disable", "status"]:
+            # Для zapret-installer от Snowy-Fluffy все операции выполняются через systemctl
+            # Прямые команды zapret (status, start, stop) не существуют
+            if action in ["start", "stop", "restart", "enable", "disable", "status", "enable_autostart", "disable_autostart", "show_status"]:
                 cmd = self._build_systemctl_command(action)
             else:
                 cmd = self._build_command(action)
             
             # Если нужны привилегии и use_pkexec=True, добавляем pkexec
-            if use_pkexec and action in ["start", "stop", "restart", "enable", "disable", "install", "uninstall"]:
+            if use_pkexec and action in ["start", "stop", "restart", "enable", "disable", "enable_autostart", "disable_autostart", "install", "uninstall", "update"]:
                 cmd = ["pkexec"] + cmd
             
             result = subprocess.run(
@@ -106,39 +113,10 @@ class CommandExecutor:
     
     def get_status(self) -> ZapretStatus:
         """Определение текущего статуса zapret"""
-        # Метод 1: Через systemctl
-        if self.use_systemctl:
-            try:
-                cmd = ["systemctl", "is-active", self.service_name]
-                result = subprocess.run(
-                    cmd,
-                    capture_output=True,
-                    text=True,
-                    timeout=10,
-                    env={**os.environ, "LANG": "C.UTF-8"}
-                )
-                status_text = result.stdout.strip().lower()
-                
-                if status_text == "active":
-                    return ZapretStatus.ACTIVE
-                elif status_text in ["inactive", "failed"]:
-                    return ZapretStatus.INACTIVE
-                else:
-                    return ZapretStatus.UNKNOWN
-            except Exception:
-                pass
-        
-        # Метод 2: Через вывод команды status
-        commands_config = self.config.get("commands", {})
-        status_config = commands_config.get("status", {})
-        parse_config = status_config.get("parse_status", {})
-        
-        active_patterns = parse_config.get("active_patterns", [])
-        inactive_patterns = parse_config.get("inactive_patterns", [])
-        case_sensitive = parse_config.get("case_sensitive", False)
-        
+        # Для zapret-installer от Snowy-Fluffy используется только systemctl
+        # Прямые команды zapret (status) не существуют
         try:
-            cmd = self._build_command("status")
+            cmd = ["systemctl", "is-active", self.service_name]
             result = subprocess.run(
                 cmd,
                 capture_output=True,
@@ -146,25 +124,18 @@ class CommandExecutor:
                 timeout=10,
                 env={**os.environ, "LANG": "C.UTF-8"}
             )
+            status_text = result.stdout.strip().lower()
             
-            output = result.stdout + result.stderr
-            if not case_sensitive:
-                output = output.lower()
-                active_patterns = [p.lower() for p in active_patterns]
-                inactive_patterns = [p.lower() for p in inactive_patterns]
-            
-            for pattern in active_patterns:
-                if pattern in output:
-                    return ZapretStatus.ACTIVE
-            
-            for pattern in inactive_patterns:
-                if pattern in output:
-                    return ZapretStatus.INACTIVE
-            
-            return ZapretStatus.UNKNOWN
-            
+            if status_text == "active":
+                return ZapretStatus.ACTIVE
+            elif status_text in ["inactive", "failed"]:
+                return ZapretStatus.INACTIVE
+            else:
+                return ZapretStatus.UNKNOWN
         except Exception:
-            return ZapretStatus.UNKNOWN
+            pass
+        
+        return ZapretStatus.UNKNOWN
     
     def get_logs(self, lines: int = 100) -> str:
         """Получение логов через journalctl"""
@@ -195,16 +166,20 @@ def load_config() -> Dict[str, Any]:
             except (json.JSONDecodeError, IOError):
                 continue
     
-    # Встроенная конфигурация по умолчанию
+    # Встроенная конфигурация по умолчанию для Snowy-Fluffy zapret-installer
+    # Для zapret-installer от Snowy-Fluffy используются ТОЛЬКО systemctl команды
+    # Прямые команды zapret (status, start, stop) не существуют
     builtin_config = {
         "zapret_binary": DEFAULT_ZAPRET_BINARY,
         "commands": {
-            "status": {"args": ["status"]},
-            "start": {"args": ["start"]},
-            "stop": {"args": ["stop"]},
-            "restart": {"args": ["restart"]},
-            "enable": {"args": ["enable"]},
-            "disable": {"args": ["disable"]},
+            "status": {"args": [], "use_systemctl_only": True},
+            "start": {"args": [], "use_systemctl_only": True},
+            "stop": {"args": [], "use_systemctl_only": True},
+            "restart": {"args": [], "use_systemctl_only": True},
+            "enable": {"args": [], "use_systemctl_only": True},
+            "disable": {"args": [], "use_systemctl_only": True},
+            "enable_autostart": {"args": [], "use_systemctl_only": True},
+            "disable_autostart": {"args": [], "use_systemctl_only": True},
             "install": {"args": ["install"]},
             "uninstall": {"args": ["uninstall"]},
             "update": {"args": ["update"]},
