@@ -1,181 +1,217 @@
 # Zapret Manager
 
-Графический интерфейс для управления **zapret-installer** от Snowy-Fluffy в Fedora 44 с использованием GTK4 и libadwaita.
+Нативное GNOME GUI-приложение для управления zapret-installer от Snowy-Fluffy в Fedora 44.
 
 ## Описание
 
-Приложение предоставляет удобный GUI для управления zapret вместо TUI/CLI интерфейса оригинального `/usr/bin/zapret`. 
+Zapret Manager предоставляет удобный графический интерфейс для управления zapret-installer без необходимости использовать TUI/CLI. Приложение соответствует GNOME Human Interface Guidelines и использует GTK4/libadwaita.
 
 ### Возможности
 
-- **Главный переключатель** - включение/выключение zapret одним кликом
-- **Индикатор статуса** - отображение текущего состояния (активно, остановлено, неизвестно)
-- **Дополнительные функции**:
-  - Перезапуск службы
-  - Включение/отключение автозапуска
-  - Установка/удаление/обновление
-  - Просмотр логов через journalctl
-  - Настройка параметров подключения
-- **Безопасность** - использование pkexec/PolicyKit для привилегированных действий
-- **GNOME-style интерфейс** - соответствует Human Interface Guidelines
+- **Главный переключатель**: Включение/выключение zapret одним кликом
+- **Статус в реальном времени**: Отображение текущего состояния (активно, остановлено, ошибка)
+- **Дополнительные функции**: Перезапуск, автозапуск, установка, удаление, обновление
+- **Просмотр логов**: Интеграция с journalctl для просмотра логов systemd
+- **Настройки**: Конфигурация путей к командам и параметров
+- **Безопасность**: Использование PolicyKit/pkexec для привилегированных операций
 
-## Структура проекта
+## Требования
 
-```
-zapret-gui/
-├── main.py                          # Главный модуль GTK4 приложения
-├── zapret_backend.py                # Модуль выполнения команд и определения статуса
-├── zapret_commands.json             # Конфигурация команд (можно редактировать)
-├── zapret-gui.sh                    # Скрипт запуска
-├── io.github.snowy-fluffy.zapret-gui.desktop  # Desktop файл для GNOME
-├── io.github.snowy-fluffy.zapret-gui.svg      # Иконка приложения
-├── io.github.snowy-fluffy.zapret-gui.policy   # PolicyKit правила
-├── Makefile                         # Установка через make
-└── README.md                        # Этот файл
-```
-
-## Зависимости
-
-Для Fedora 44:
+### Для запуска приложения
 
 ```bash
 sudo dnf install python3 python3-gobject gtk4 libadwaita polkit pkexec
 ```
 
-## Установка
-
-### Вариант 1: Через Makefile (рекомендуется)
+### Для сборки RPM пакета
 
 ```bash
-cd zapret-gui
-sudo make install
+sudo dnf install rpm-build rpmdevtools
 ```
 
-Это установит:
-- Приложение в `/usr/bin/zapret-gui`
-- Desktop файл в `/usr/share/applications/`
-- Иконку в `/usr/share/icons/hicolor/scalable/apps/`
-- PolicyKit правила в `/usr/share/polkit-1/actions/`
+## Установка
 
-### Вариант 2: Ручная установка
+### Вариант 1: Через скрипт установки (рекомендуется)
 
 ```bash
-# Копирование файлов
-sudo cp zapret-gui.sh /usr/bin/zapret-gui
-sudo chmod +x /usr/bin/zapret-gui
-sudo cp io.github.snowy-fluffy.zapret-gui.desktop /usr/share/applications/
-sudo cp io.github.snowy-fluffy.zapret-gui.svg /usr/share/icons/hicolor/scalable/apps/
-sudo cp io.github.snowy-fluffy.zapret-gui.policy /usr/share/polkit-1/actions/
+# Установка
+sudo ./install.sh
 
-# Обновление кэша иконок
-sudo gtk-update-icon-cache /usr/share/icons/hicolor
+# Проверка установки
+./install.sh --check
+
+# Удаление
+sudo ./install.sh --uninstall
+```
+
+### Вариант 2: Из RPM пакета
+
+```bash
+# Сборка RPM пакета
+./build-rpm.sh
+
+# Сборка и установка
+./build-rpm.sh --install
+
+# После сборки пакеты находятся в:
+# - rpm/RPMS/noarch/ (binary пакет)
+# - rpm/SRPMS/ (source пакет)
 ```
 
 ### Вариант 3: Локальный запуск без установки
 
 ```bash
-cd zapret-gui
 chmod +x zapret-gui.sh
 ./zapret-gui.sh
 ```
 
+## Структура проекта
+
+```
+zapret-gui/
+├── main.py                          # GTK4/libadwaita GUI
+├── zapret_backend.py                # Backend логика
+├── zapret_commands.json             # Конфигурация команд
+├── zapret-gui.sh                    # Скрипт локального запуска
+├── install.sh                       # Скрипт установки/удаления
+├── build-rpm.sh                     # Скрипт сборки RPM
+├── io.github.snowy-fluffy.zapret-gui.desktop  # Desktop файл
+├── io.github.snowy-fluffy.zapret-gui.svg      # Иконка приложения
+├── io.github.snowy-fluffy.zapret-gui.policy   # PolicyKit правила
+├── rpm/
+│   ├── SOURCES/                     # Исходники для RPM
+│   ├── SPECS/                       # Spec файл
+│   ├── BUILD/                       # Директория сборки
+│   ├── RPMS/                        # Binary пакеты
+│   └── SRPMS/                       # Source пакеты
+└── README.md                        # Этот файл
+```
+
 ## Использование
 
-1. Запустите приложение из меню приложений GNOME (найдите "Zapret Manager")
-2. При первом запуске приложение попытается определить текущий статус zapret
-3. Используйте главный переключатель для включения/выключения
-4. Дополнительные функции доступны в боковой панели
+### Запуск приложения
+
+После установки приложение доступно:
+
+- В меню приложений GNOME как "Zapret Manager"
+- Из терминала: `zapret-gui` или `zapret-manager`
+
+### Главное окно
+
+- **Центральный элемент**: Большой переключатель включения/выключения
+- **Индикатор статуса**: Показывает текущее состояние zapret
+- **Боковая панель**: Дополнительные функции
+
+### Дополнительные функции
+
+- **Перезапуск**: Перезапуск службы zapret
+- **Автозапуск**: Включение/выключение автозагрузки при старте системы
+- **Установка**: Установка компонентов zapret
+- **Удаление**: Удаление компонентов zapret
+- **Обновление**: Обновление до последней версии
+- **Логи**: Просмотр логов через journalctl
+- **Настройки**: Конфигурация приложения
 
 ## Конфигурация
 
-По умолчанию приложение использует следующие команды:
+### Системная конфигурация
 
-| Действие | Команда |
-|----------|---------|
-| Статус | `systemctl is-active zapret.service` или `/usr/bin/zapret status` |
-| Включение | `systemctl start zapret.service` |
-| Выключение | `systemctl stop zapret.service` |
-| Перезапуск | `systemctl restart zapret.service` |
-| Автозапуск вкл | `systemctl enable zapret.service` |
-| Автозапуск выкл | `systemctl disable zapret.service` |
-| Установка | `/usr/bin/zapret install` |
-| Удаление | `/usr/bin/zapret uninstall` |
-| Обновление | `/usr/bin/zapret update` |
+Файл `/etc/zapret-gui/config.json` содержит настройки по умолчанию:
 
-### Изменение конфигурации
-
-Если команды отличаются в вашей версии zapret, создайте файл конфигурации:
-
-**Системная конфигурация** (`/etc/zapret-gui/config.json`):
 ```json
 {
-    "zapret_binary": "/usr/bin/zapret",
+    "zapret_path": "/usr/bin/zapret",
+    "service_name": "zapret.service",
+    "use_systemctl": true,
     "commands": {
-        "status": {"args": ["status"]},
-        "start": {"args": ["start"]},
-        "stop": {"args": ["stop"]}
-    },
-    "systemd_service": {
-        "name": "zapret.service",
-        "use_systemctl": true
+        "start": ["start"],
+        "stop": ["stop"],
+        "restart": ["restart"],
+        "status": ["status"]
     }
 }
 ```
 
-**Пользовательская конфигурация** (`~/.config/zapret-gui/config.json`):
-```json
-{
-    "timeout_seconds": 60
-}
-```
+### Пользовательская конфигурация
+
+Приложение проверяет конфигурацию в следующем порядке:
+
+1. `/etc/zapret-gui/config.json` (системная)
+2. `~/.config/zapret-gui/config.json` (пользовательская)
+3. Встроенная конфигурация
 
 ## Безопасность
 
-- Приложение **не запускается от root**
-- Для привилегированных действий используется `pkexec`
-- Все команды выполняются через `subprocess` с передачей аргументов списком (защита от shell-инъекций)
+- Приложение запускается от имени обычного пользователя
+- Привилегированные операции выполняются через pkexec/PolicyKit
+- Все команды выполняются через subprocess с аргументами списком (без shell-инъекций)
 - PolicyKit правила ограничивают список разрешённых команд
 
-## Troubleshooting
+## PolicyKit
+
+Для работы привилегированных операций установлен PolicyKit файл:
+`/usr/share/polkit-1/actions/io.github.snowy-fluffy.zapret-gui.policy`
+
+Разрешения:
+- `io.github.snowy-fluffy.zapret-gui.start` - Запуск zapret
+- `io.github.snowy-fluffy.zapret-gui.stop` - Остановка zapret
+- `io.github.snowy-fluffy.zapret-gui.restart` - Перезапуск zapret
+- `io.github.snowy-fluffy.zapret-gui.enable` - Включение автозапуска
+- `io.github.snowy-fluffy.zapret-gui.disable` - Отключение автозапуска
+- `io.github.snowy-fluffy.zapret-gui.install` - Установка
+- `io.github.snowy-fluffy.zapret-gui.uninstall` - Удаление
+
+## Решение проблем
 
 ### Приложение не запускается
 
 Проверьте зависимости:
 ```bash
-python3 -c "import gi; gi.require_version('Gtk', '4.0'); gi.require_version('Adw', '1')"
+sudo dnf install python3 python3-gobject gtk4 libadwaita
 ```
 
-### Не определяется статус
-
-1. Проверьте наличие systemd сервиса:
-   ```bash
-   systemctl list-unit-files | grep zapret
-   ```
-
-2. Если сервис называется иначе, измените в конфигурации `systemd_service.name`
-
-### pkexec запрашивает пароль каждый раз
-
-Это нормальное поведение. Для более удобной работы можно настроить PolicyKit правила в `/etc/polkit-1/rules.d/`.
-
-### Ошибка "Zapret binary not found"
-
-Убедитесь, что zapret установлен:
+Проверьте логи:
 ```bash
-ls -la /usr/bin/zapret
+journalctl -f | grep zapret-gui
 ```
 
-Если путь отличается, укажите правильный в конфигурации.
+### Привилегированные операции не работают
+
+Убедитесь, что polkit активен:
+```bash
+systemctl status polkit
+```
+
+Проверьте наличие PolicyKit файла:
+```bash
+ls -la /usr/share/polkit-1/actions/io.github.snowy-fluffy.zapret-gui.policy
+```
+
+### Статус отображается как "Неизвестно"
+
+- Проверьте, установлен ли zapret: `which zapret`
+- Проверьте статус systemd сервиса: `systemctl status zapret`
+- Возможно, требуется настройка команд в конфигурации
+
+## Команды zapret
+
+По умолчанию используются следующие команды:
+
+| Действие | Команда |
+|----------|---------|
+| Старт | `pkexec /usr/bin/zapret start` |
+| Стоп | `pkexec /usr/bin/zapret stop` |
+| Перезапуск | `pkexec /usr/bin/zapret restart` |
+| Статус | `/usr/bin/zapret status` |
+| Вкл. автозапуск | `pkexec systemctl enable zapret` |
+| Выкл. автозапуск | `pkexec systemctl disable zapret` |
+
+Если команды отличаются в вашей версии zapret, отредактируйте `/etc/zapret-gui/config.json`.
 
 ## Лицензия
 
-GPL-3.0
+GPL-3.0-or-later
 
-## Авторы
+## Поддержка
 
-- Оригинал zapret-installer: [Snowy-Fluffy](https://github.com/Snowy-Fluffy/zapret-installer)
-- GUI обёртка: Community contribution
-
-## Вклад в проект
-
-Если команды `/usr/bin/zapret` отличаются в вашей версии, пожалуйста, отправьте PR с обновлением `zapret_commands.json`.
+Вопросы и предложения направляйте на GitHub: https://github.com/snowy-fluffy/zapret-installer

@@ -1,27 +1,23 @@
 ```
-# Compiled and build artifacts
-*.pyc
-__pycache__/
+# Build artifacts
+build/
+dist/
 *.o
 *.obj
-*.so
-*.dll
-*.exe
 *.out
 
 # Dependencies
+node_modules/
 .venv/
 venv/
-node_modules/
+__pycache__/
 .mypy_cache/
 .pytest_cache/
-*.egg-info/
 
 # Logs and temp files
 *.log
 *.tmp
 *.swp
-*.swo
 
 # Environment
 .env
@@ -31,15 +27,6 @@ node_modules/
 # Editors
 .vscode/
 .idea/
-
-# Build systems
-build/
-dist/
-target/
-.gradle/
-.cargo/
-zig-cache/
-zig-out/
 
 # OS specific
 .DS_Store
